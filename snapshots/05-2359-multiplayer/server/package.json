@@ -1,0 +1,13 @@
+{
+  "name": "kart-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "three": "^0.182.0",
+    "pngjs": "^7.0.0"
+  }
+}

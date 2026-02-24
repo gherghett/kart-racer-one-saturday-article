@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kart Racer — Saturday Build Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="report/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Georgia&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-800 leading-relaxed">
+
+    <!-- Left sidebar (file tree) -->
+    <div id="sidebar-left">
+        <div class="sidebar-header">
+            <span class="icon">&#128193;</span>
+            <span id="left-title" class="title">Files</span>
+            <button id="left-close" class="sidebar-close">&times;</button>
+        </div>
+        <div id="left-content" class="sidebar-content"></div>
+    </div>
+
+    <!-- Right sidebar (chat viewer) -->
+    <div id="sidebar-right">
+        <div class="sidebar-header">
+            <span class="icon">&#128172;</span>
+            <span id="right-title" class="title">Chat</span>
+            <button id="right-close" class="sidebar-close">&times;</button>
+        </div>
+        <div id="right-content" class="sidebar-content"></div>
+    </div>
+
+    <!-- Page content -->
+    <div id="page-wrap">
+
+    <!-- Header -->
+    <header class="max-w-2xl mx-auto px-6 pt-16 pb-8">
+        <h1 class="text-4xl font-bold leading-tight mb-4">Kart Racer: One Saturday</h1>
+        <div class="mt-6 flex items-center gap-3 text-sm text-gray-400 sans">
+            <span>Daniel</span>
+            <span>&middot;</span>
+            <span>Saturday 14 feb 2026, 13:35&ndash;23:58</span>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-6 pb-20">
+
+        <div class="bg-stone-50 border border-stone-300 rounded-lg p-6 mb-10 text-sm" style="border-left: 4px solid #78716c; font-family: Georgia, serif; font-style: italic; color: #44403c;">
+            <p class="mb-3">
+                Efter att ha sett ett &ldquo;vibe-coding&rdquo; projekt p&aring; reddit, undrade jag &mdash; vad kan man &aring;stadkomma p&aring; en dag egentligen? Om man inte tar h&auml;nsyn till tradition utan k&ouml;r p&aring;?
+            </p>
+            <p class="mb-3">
+                Min grundtanke var att anv&auml;nda JavaScript och Vite, och g&ouml;ra m&aring;nga sm&aring; projekt, som alla d&aring; kan ha var sitt UI &mdash; som tex kart-editor, kart-generering, sj&auml;lva spelet. Varje mapp kan vara frist&aring;ende och blir l&auml;ttare att hantera, och enkel data kan delas eller kopieras mellan dem till &ldquo;huvud&rdquo;-mappen som &auml;nd&aring; &auml;r spelets runtime.
+            </p>
+            <p class="mb-3">
+                Efter att egentligen lyckas med allt jag ville g&ouml;ra lade jag till multiplayer i slutet, som till min f&ouml;rv&aring;ning faktiskt ocks&aring; fungerade ganska bra.
+            </p>
+            <p class="mb-3">
+                Resten av rapporten &auml;r AI-genererad av Claude Codes interna sparade chat-historik, men visar ganska bra vad jag gjorde.
+            </p>
+            <p class="text-right" style="font-style: normal; font-weight: 500; color: #78716c;">&mdash; Daniel</p>
+        </div>
+
+        <p class="mb-6">
+            A browser-based kart racing game, built from scratch in a single Saturday. Started at 13:35 with an empty folder, ended just before midnight with a playable multiplayer-ready racer featuring AI opponents, power-ups, a map editor, and a sprite generator. ~167 messages across 21 sessions, 8 project folders.
+        </p>
+
+        <p class="mb-6">
+            The <a href="#" data-sidebar="tree" data-highlight="snapshots">snapshots</a> folder contains project snapshots at five milestones through the day. They were reconstructed by replaying file writes and edits from the chat logs on top of the nearest git commit &mdash; so some config files and minor edits may be missing or slightly off, but the source code demonstrates the state of the project at each point.
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">13:35 &mdash; Two projects at once</h2>
+
+        <p class="mb-6">
+            It started with two parallel Claude sessions. One built the
+            <a href="#" data-sidebar="chat" data-src="1335_game_12472357.jsonl">game engine</a>
+            &mdash; Three.js, Vite, a ground mesh with hills, and a billboard-sprite kart with keyboard controls.
+            The other built a
+            <a href="#" data-sidebar="chat" data-src="1346_kart-gen_05083f38.jsonl">sprite generator tool</a>
+            for rendering 3D kart models into 2D sprite sheets from 16 directions.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="1335_game_12472357.jsonl" data-msg="94cb716b-832a-40c7-9f0a-6fc8a314841e" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> so we are going to be making a game for the browser, its a kart racing game. We are using a mesh for the ground, and billboard sprites for the carts</p>
+            <p><span class="assistant">Claude:</span> Let me set up the project and get a solid foundation going.</p>
+        </div>
+
+        <p class="mb-6">
+            The game session focused on getting core movement right &mdash; gravity tuning, slope physics, shadow rendering. The vel.y bug was a highlight: gravity was being overwritten every frame because <code>vel.copy(forward)</code> zeroed the Y component in
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/game/src/physics.js">physics.js</a>.
+            Once fixed, karts actually flew off ramps with proper parabolic arcs. A
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/game/src/debug.js">debug graph</a>
+            was added to visualize vel.y and pos.y in real time.
+        </p>
+
+        <div class="my-8">
+            <img src="debug-graph.png"
+                 alt="Debug graph showing vel.y and pos.y during a jump"
+                 class="rounded-lg shadow-md mx-auto" style="max-width: 420px;">
+            <p class="figure-caption mt-3 text-center">The debug graph at 14:13 &mdash; red line is vel.y (linear decrease = gravity working), blue is pos.y (parabolic arc = correct jump trajectory).</p>
+        </div>
+
+        <p class="mb-6">
+            Meanwhile,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/kart-gen">kart-gen</a>
+            became a full tool &mdash; orthographic camera, 8-direction live preview strip, nearest-neighbor chunky textures on the
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/kart-gen/src/objects/wonky-kart.ts">wonky-kart</a>
+            and
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/kart-gen/src/objects/firetruck.ts">firetruck</a>,
+            and an
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/kart-gen/src/sprite-exporter.ts">export system</a>
+            that saves sprite sheets to disk via a Vite dev server plugin. The game loaded the sprites and selected the correct directional frame based on camera angle, with turning variants when steering.
+        </p>
+
+        <div class="my-8">
+            <img src="screenshot-kartgen.png"
+                 alt="kart-gen sprite generator tool"
+                 class="rounded-lg shadow-md w-full max-w-xl mx-auto">
+            <p class="figure-caption mt-3 text-center">The kart-gen tool &mdash; 3D model with steering controls, export buttons, and the 8-direction preview strip at the bottom.</p>
+        </div>
+
+        <div class="my-8">
+            <img src="spritesheet.png"
+                 alt="Wonky kart spritesheet — 16 directions"
+                 class="rounded-lg shadow-md w-full max-w-xl mx-auto">
+            <p class="figure-caption mt-3 text-center">Exported spritesheet &mdash; the wonky kart rendered from all 16 directions.</p>
+        </div>
+
+        <p class="mb-6 text-sm text-gray-500 sans">
+            Project at 15:00 &mdash; <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites">35 files across 3 folders</a>:
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/game/src">game/src</a> (9 files),
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/kart-gen/src">kart-gen/src</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/01-1500-engine-and-sprites/map-editor/src">map-editor/src</a>
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">15:14 &mdash; Project consolidation &amp; maps</h2>
+
+        <p class="mb-6">
+            The scattered project folders got merged under a single <code>kart/</code> umbrella. A
+            <a href="#" data-sidebar="chat" data-src="1525_kart_a1de3ed5.jsonl">map editor</a>
+            was built from scratch &mdash; a dark-themed 2D canvas tool
+            (<a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/map-editor/src/editor.ts">editor.ts</a>)
+            with terrain painting
+            (<a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/map-editor/src/tools.ts">tools.ts</a>),
+            height brushes, and a file-based save/load API through a
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/map-editor/vite.config.ts">Vite plugin</a>.
+        </p>
+
+        <p class="mb-6">
+            A separate session wired the
+            <a href="#" data-sidebar="chat" data-src="1530_kart_a6bc1367.jsonl">game to read map files</a>
+            via a new
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/game/src/map-loader.js">map-loader.js</a>
+            and
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/game/src/menu.js">menu.js</a>
+            for level select, terrain-based speed penalties (offroad slowdown), and removing the hardcoded oval track.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="1530_kart_a6bc1367.jsonl" data-msg="8714ae2d-13d1-4411-8147-36d58aeab768" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> the "pixel" on the map should be bigger something like trice the size</p>
+            <p><span class="assistant">Claude:</span> Simple fix &mdash; add a CELL_SIZE multiplier in track.js.</p>
+        </div>
+
+        <div class="my-8 flex gap-3">
+            <div class="flex-1">
+                <img src="screenshot-driving-01.png"
+                     alt="Driving on the track with debug overlay"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+            <div class="flex-1">
+                <img src="screenshot-driving-hills.png"
+                     alt="Driving over hills with debug graph"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+        </div>
+        <p class="figure-caption mb-6 text-center">Driving the track with the debug overlay &mdash; billboard sprite kart on a heightmap terrain with offroad/road distinction.</p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">16:00 &mdash; CTR-style power sliding</h2>
+
+        <p class="mb-6">
+            Steering got a complete overhaul in
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/game/src/physics.js">physics.js</a>
+            &mdash; the old indirect "steering wheel" model (input accumulates steerAngle, steerAngle drives rotation) was replaced with
+            <a href="#" data-sidebar="chat" data-src="1530_kart_a6bc1367.jsonl">direct turn rate</a>.
+            Then the big feature: Crash Team Racing-style power slides with a timing-based boost meter.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="1530_kart_a6bc1367.jsonl" data-msg="d4572330-16e5-454f-bd7d-6d0373bec3f0" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> ok and now we are going big: we want CTR-style sliding and boosting. you know the mechanic?</p>
+            <p><span class="assistant">Claude:</span> Yeah &mdash; CTR power sliding: Hold drift + steer, kart hops into a slide. While sliding, a meter fills up &mdash; press a boost key when it's in the sweet spot. Chain up to 3 boosts per slide.</p>
+        </div>
+
+        <p class="mb-6">
+            The implementation used Z/X keys as dual hop buttons (tap to hop, hold through landing to slide, tap the opposite key in the sweet spot to charge boosts). Camera Y-damping was added to
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/game/src/camera.js">camera.js</a>
+            so hops didn't jerk the view, and the kart got a visual rotation offset during slides.
+        </p>
+
+        <p class="mb-6 text-sm text-gray-500 sans">
+            Project at 16:40 &mdash; <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor">37 files</a>.
+            New:
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/gamepad-test">gamepad-test/</a>
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">16:44 &mdash; Debugging and controllers</h2>
+
+        <p class="mb-6">
+            The boost system worked in theory but was hard to trigger &mdash; turned out the
+            <a href="#" data-sidebar="chat" data-src="1644_kart_68c0a196.jsonl">keyboard had ghosting issues</a>
+            that prevented pressing 3 keys simultaneously. Solution: build a
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/02-1640-maps-and-editor/gamepad-test">gamepad test tool</a>,
+            map a PS/Xbox-style controller, and integrate it into
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/input.js">input.js</a>.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="1644_kart_68c0a196.jsonl" data-msg="d0600bd3-f4a1-4f7b-8edc-e8fc5a0071c3" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> i think my keyboard dont allow me pressing 3 buttons at once.... we will need to use a controller. lets work on that.</p>
+            <p><span class="assistant">Claude:</span> LB = hop Z, RB = hop X, A = accelerate, B = brake, Left stick/D-pad = steer, Right stick = camera rotate.</p>
+        </div>
+
+        <div class="my-8">
+            <img src="screenshot-gamepad.png"
+                 alt="Gamepad test tool"
+                 class="rounded-lg shadow-md mx-auto" style="max-width: 500px;">
+            <p class="figure-caption mt-3 text-center">The gamepad test tool &mdash; built to diagnose which raw button indices mapped to what on the controller.</p>
+        </div>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">18:30 &mdash; Bot AI &amp; the race system</h2>
+
+        <p class="mb-6">
+            With a
+            <a href="#" data-sidebar="chat" data-src="1832_kart_d21b341c.jsonl">detailed plan</a>
+            in place, the
+            <a href="#" data-sidebar="chat" data-src="1850_kart_94ab251a.jsonl">race system</a>
+            came together in one session &mdash; five new files added to
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src">game/src</a>:
+        </p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-1">
+            <li><a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/bot-input.js">bot-input.js</a> &mdash; AI steering toward checkpoints, throttle control, stuck recovery</li>
+            <li><a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/race.js">race.js</a> &mdash; lap counting, checkpoint lookahead, finish-line crossing detection</li>
+            <li><a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/kart-collision.js">kart-collision.js</a> &mdash; kart-to-kart bumping</li>
+            <li><a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/start-line.js">start-line.js</a> &mdash; terrain-conforming checkerboard decal</li>
+            <li><a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/hud.js">hud.js</a> &mdash; position display, minimap, boost meter, finish screen</li>
+        </ul>
+
+        <p class="mb-6">
+            The finish line alone needed several iterations &mdash; it started as an infinite-width crossing detector, then got bounded to match the visual decal, then the crossing direction check turned out to be inverted.
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/boost-pad.js">Boost pads</a> and a reusable
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots/game/src/ground-decal.js">ground-decal.js</a>
+            system were added to both the editor and game.
+        </p>
+
+        <div class="my-8 flex gap-3">
+            <div class="flex-1">
+                <img src="screenshot-levelselect.png"
+                     alt="Level select screen"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+            <div class="flex-1">
+                <img src="screenshot-race-start.png"
+                     alt="Race start with bots and checkerboard line"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+        </div>
+        <div class="my-4">
+            <img src="screenshot-race-4th.png"
+                 alt="Racing in 4th place with minimap"
+                 class="rounded-lg shadow-md w-full max-w-md mx-auto">
+        </div>
+        <p class="figure-caption mb-6 text-center">Level select, race start with checkerboard finish line and bot opponents, and racing in 4th with the minimap and position HUD.</p>
+
+        <p class="mb-6 text-sm text-gray-500 sans">
+            Project at 19:00 &mdash; <a href="#" data-sidebar="tree" data-highlight="snapshots/03-1900-race-and-bots">44 files</a>.
+            game/src grew from 9 to 16 files
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">20:00 &mdash; Items and combat</h2>
+
+        <p class="mb-6">
+            The <a href="#" data-sidebar="chat" data-src="2035_kart_d83ae248.jsonl">item system</a> landed across two sessions, touching 11 files between the
+            <a href="#" data-sidebar="chat" data-src="2051_kart_37a26c13.jsonl">game and editor</a>.
+            Floating
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/item-boxes.js">item boxes</a>
+            (with shadows, bob animation, respawn timers) give random power-ups: speed boosts,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/tnt.js">TNT bombs</a>
+            you drop behind you, and homing
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/missile.js">missiles</a>
+            with a 120&deg; forward cone.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="2051_kart_37a26c13.jsonl" data-msg="1e3a1605-5b27-4745-8086-5777146fbd11" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> ok now add missiles that you can shoot, they turn slightly against the closest kart.</p>
+            <p><span class="assistant">Claude:</span> The missile only homes toward karts within a 120&deg; forward cone. If nothing is in the cone, it flies straight.</p>
+        </div>
+
+        <div class="my-8 flex gap-3">
+            <div class="flex-1">
+                <img src="screenshot-itemboxes.png"
+                     alt="Item boxes floating on the track"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+            <div class="flex-1">
+                <img src="screenshot-skidmarks.png"
+                     alt="Skid marks and boost pad on the road"
+                     class="rounded-lg shadow-md w-full">
+            </div>
+        </div>
+        <p class="figure-caption mb-6 text-center">Floating item boxes with shadows along the track, and skid marks left behind from a power slide with a green boost pad ahead.</p>
+
+        <p class="mb-6">
+            Visual polish in the same sessions: black
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/skid-marks.js">skid marks</a>
+            from power-sliding tires (4 strips per kart, sliding-window buffer geometry),
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/boost-visual.js">boost flames</a>,
+            and a full shadow system overhaul &mdash; flat sprites were replaced with subdivided mesh planes that conform to terrain height, fixing the persistent z-fighting and clipping issues. Physics got
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/kart-visuals.js">separated from visuals</a>
+            to prepare for multiplayer.
+        </p>
+
+        <p class="mb-6 text-sm text-gray-500 sans">
+            Project at 21:30 &mdash; <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects">52 files</a>.
+            game/src grew to 22 files: +<a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/item-boxes.js">item-boxes</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/tnt.js">tnt</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/missile.js">missile</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/skid-marks.js">skid-marks</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/boost-visual.js">boost-visual</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/04-2130-items-and-effects/game/src/kart-visuals.js">kart-visuals</a>
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">21:30 &mdash; Map editor upgrades</h2>
+
+        <p class="mb-6">
+            The <a href="#" data-sidebar="chat" data-src="2131_kart_29c70273.jsonl">map editor session</a> added a Three.js
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/map-editor/src/preview3d.ts">3D preview panel</a>
+            (floating box in the corner, orbit controls), custom per-terrain-type color pickers, and a full per-pixel color painting layer with its own brush. The height brush got a redesign &mdash; instead of just raise/lower, it now paints toward a target height value with a slider.
+        </p>
+
+        <div class="my-8">
+            <img src="screenshot-mapeditor.png"
+                 alt="Map editor with tooth map, 3D preview, and all editing modes"
+                 class="rounded-lg shadow-md w-full max-w-xl mx-auto">
+            <p class="figure-caption mt-3 text-center">The map editor showing the "tooth" track &mdash; terrain types, numbered checkpoints, boost pads, item box positions, start line, and the 3D preview in the corner.</p>
+        </div>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">22:00 &mdash; Multiplayer &amp; late-night push</h2>
+
+        <p class="mb-6">
+            Then the
+            <a href="#" data-sidebar="chat" data-src="2232_kart_44e99b1b.jsonl">multiplayer push</a>
+            started. A whole
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server">server/</a>
+            appeared &mdash;
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/index.js">index.js</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/room.js">room.js</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/lobby.js">lobby.js</a>
+            &mdash; plus server-side versions of the game systems
+            (<a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/server-items.js">items</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/server-tnt.js">TNT</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server/server-missile.js">missiles</a>).
+        </p>
+
+        <p class="mb-6">
+            The client got a
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/net">net/</a>
+            folder with
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/net/connection.js">connection</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/net/prediction.js">client prediction</a>,
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/net/interpolation.js">interpolation</a>,
+            and a
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/lobby-ui.js">lobby UI</a>.
+            The session ended just before midnight struggling with camera jitter from state reconciliation.
+        </p>
+
+        <div class="claude-convo rounded-r-lg p-5 mb-6 text-sm space-y-3 relative">
+            <a href="#" class="convo-sidebar-btn" data-sidebar="chat" data-src="2232_kart_44e99b1b.jsonl" data-msg="e9b527b7-77ac-4640-93f0-4d14dd31d7ce" title="View in chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+            <p><span class="human">Daniel:</span> ok now this is a big one: multiplayer. we are going to need a server and everything. tell me what you think would be a good approach</p>
+            <p><span class="assistant">Claude:</span> WebSocket server, authoritative with client prediction. The server runs the physics tick, clients send inputs and render ahead, reconcile on state updates.</p>
+        </div>
+
+        <p class="mb-6">
+            In parallel, a
+            <a href="#" data-sidebar="chat" data-src="2333_kart_389c6774.jsonl">decal system session</a>
+            added the ability to stamp, rotate, and scale decorative elements onto the map through the editor.
+        </p>
+
+        <p class="mb-6 text-sm text-gray-500 sans">
+            Final state &mdash; <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer">71 files</a>.
+            game/src: 29 files.
+            New:
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/server">server/</a> (9 files),
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game/src/net">game/src/net/</a> (5 files),
+            <a href="#" data-sidebar="tree" data-highlight="snapshots/05-2359-multiplayer/game_decals">game_decals/</a>
+        </p>
+
+        <!-- ============================================ -->
+        <h2 class="text-2xl font-bold mt-14 mb-6">What got built</h2>
+
+        <p class="mb-4">In about 10 hours, from empty folder to 71 files:</p>
+
+        <ul class="list-disc pl-6 mb-6 space-y-1">
+            <li><strong>Game engine</strong> &mdash; Three.js, heightmap terrain, billboard sprites, analytical ground height (no raycasting)</li>
+            <li><strong>Driving physics</strong> &mdash; acceleration, steering, gravity, slope effects, offroad penalties, wall collision</li>
+            <li><strong>CTR-style power slides</strong> &mdash; hop, slide, timing-based boost meter with 3 charge levels</li>
+            <li><strong>Sprite generator</strong> &mdash; 3D models to 16-direction sprite sheets with turning variants</li>
+            <li><strong>Map editor</strong> &mdash; terrain painting, height brushes, color layer, checkpoints, boost pads, item boxes, 3D preview, decals</li>
+            <li><strong>Race system</strong> &mdash; laps, checkpoints, finish line, position tracking, results screen</li>
+            <li><strong>Bot AI</strong> &mdash; checkpoint following, throttle control, stuck recovery, item use</li>
+            <li><strong>Items</strong> &mdash; item boxes, speed boosts, TNT bombs, homing missiles</li>
+            <li><strong>Visual effects</strong> &mdash; skid marks, boost flames, terrain-conforming shadows</li>
+            <li><strong>Gamepad support</strong> &mdash; custom button mapping</li>
+            <li><strong>Multiplayer prototype</strong> &mdash; WebSocket server, client prediction, state reconciliation</li>
+        </ul>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-6 text-sm" style="border-left: 4px solid #d97706;">
+            <p class="sans font-semibold text-amber-800 mb-2">About this report</p>
+            <p class="text-amber-900">Auto-generated from Claude Code chat history (~/.claude). The 21 session logs are browsable in the chat sidebar. The <a href="#" data-sidebar="tree" data-highlight="snapshots">snapshot folders</a> were reconstructed by replaying 607 Write/Edit operations from the JSONL files onto the nearest git baseline. They are not perfect &mdash; ~5% of edits couldn't be replayed due to files created outside of tool calls (npm init, manual edits) &mdash; but the source code is representative of each milestone.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 py-10 text-center text-sm text-gray-400 sans">
+        <p>Daniel Gherghetta &middot; 2026</p>
+    </footer>
+
+    </div><!-- /page-wrap -->
+
+    <script src="report/tree-data.js"></script>
+    <script src="report/chat-data.js"></script>
+    <script src="report/app.js"></script>
+</body>
+</html>

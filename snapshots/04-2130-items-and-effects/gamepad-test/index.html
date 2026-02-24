@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gamepad Test</title>
+  <style>
+    body { background: #111; color: #eee; font-family: monospace; margin: 20px; }
+    #status { font-size: 18px; margin-bottom: 20px; }
+    .gamepad { background: #222; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    .gamepad h2 { margin: 0 0 12px; color: #ffaa00; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .btn { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center;
+           justify-content: center; font-size: 12px; background: #333; transition: background 0.05s; }
+    .btn.pressed { background: #44ff44; color: #000; font-weight: bold; }
+    .axes { display: flex; gap: 16px; flex-wrap: wrap; }
+    .axis { text-align: center; }
+    .axis-bar { width: 120px; height: 16px; background: #333; border-radius: 4px; position: relative; overflow: hidden; }
+    .axis-fill { height: 100%; background: #44aaff; position: absolute; transition: left 0.02s, width 0.02s; }
+    .axis-label { font-size: 11px; color: #888; margin-top: 2px; }
+    #log { background: #1a1a1a; padding: 12px; border-radius: 8px; max-height: 300px;
+           overflow-y: auto; font-size: 13px; line-height: 1.6; }
+    .log-press { color: #44ff44; }
+    .log-release { color: #ff4444; }
+  </style>
+</head>
+<body>
+  <div id="status">Press a button on your controller to connect...</div>
+  <div id="gamepads"></div>
+  <h3>Event Log</h3>
+  <div id="log"></div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
